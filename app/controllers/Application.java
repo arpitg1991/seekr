@@ -85,9 +85,9 @@ public class Application extends Controller {
     System.out.println(post.toString());
    // System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n") ; 
    // System.out.println(jQuery.toString() );
+    renderJSON(post);
     return post ;
-    //renderJSON(post);
-
+    
     //index() ;
   	//return ok(index.render("Your new application is ready."));
   }
