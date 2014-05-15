@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 
 import com.amazonaws.util.json.JSONException;
 import com.amazonaws.util.json.JSONObject;
+import com.mongodb.BasicDBList;
+import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoException;
@@ -19,6 +21,7 @@ import com.mongodb.util.JSON;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList ; 
@@ -29,12 +32,16 @@ public class mongoDBHandler {
 	public static MongoClient mongoClient ;
 	public static DB db ;
 	public static Set<String> colls ;
+	public static final String DBNAME = "seekrdb" ;
+	public static final String dbUser = "arpitg1991" ; 
+	public static final String dbPassword = "arpit1" ; 
 	public mongoDBHandler() throws UnknownHostException{
-        MongoClientURI uri  = new MongoClientURI("mongodb://arpitg1991:arpit1@ds047447.mongolab.com:47447/seekr"); 
+        
+		MongoClientURI uri  = new MongoClientURI("mongodb://" + dbUser +":" + dbPassword + "@ds045089.mongolab.com:45089/" + DBNAME); 
         
 		mongoClient = new MongoClient( uri);
 		mongoClient.setWriteConcern(WriteConcern.JOURNALED);
-		db = mongoClient.getDB( "seekr" );
+		db = mongoClient.getDB(  DBNAME );
 		colls = db.getCollectionNames();
 		for (String s : colls){
 			//System.out.println(s);
@@ -70,7 +77,7 @@ public class mongoDBHandler {
 		int likes = 0 ; 
 		
 		BasicDBObject postDoc = new BasicDBObject("_id", postId.toString()).
-                //append("userId", userId).
+                append("userId", userId).
                 append("text", text).
                 append("location", new BasicDBObject("type", "Point").append("coordinates", point)).
                 append("postTime",postDate).
@@ -152,6 +159,37 @@ public class mongoDBHandler {
 			}
 		postList.put("post",postItems);
 		return postList ; 
+	}
+	public JSONObject searchPosts(String searchText ){
+		final DBObject textSearchCommand = new BasicDBObject();
+		String collectionName = "posts" ;
+	    textSearchCommand.put("text", collectionName);
+	    textSearchCommand.put("search", searchText);
+	    JSONObject postList = new JSONObject() ; 
+		List<JSONObject> postItems = new ArrayList<JSONObject>() ; 
+		
+	    final CommandResult commandResult = db.command(textSearchCommand);
+	    System.out.println(searchText);
+	    BasicDBList postsDbObjectList = new BasicDBList() ; 
+	    
+	    postsDbObjectList = (BasicDBList) commandResult.get("results");
+	    
+	    Iterator<Object> it = postsDbObjectList.iterator();
+	    
+	    while ( it.hasNext()) {
+	    	BasicDBObject queryItem = (BasicDBObject) it.next();
+	    	JSONObject postObj = new JSONObject(queryItem.toMap() );
+		    postItems.add(postObj);
+			   
+	     
+	    }
+	    try {
+			postList.put("post",postItems);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return postList;
 	}
 
 }

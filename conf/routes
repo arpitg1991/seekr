@@ -9,6 +9,7 @@ POST    /createPost                      Application.createPost
 GET		/getPost						 Application.getPost
 GET		/getComments						 Application.getComments
 POST	/createComment					 Application.createComment
+GET		/searchPosts					 Application.searchPosts
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

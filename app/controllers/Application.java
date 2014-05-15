@@ -91,6 +91,11 @@ public class Application extends Controller {
     //index() ;
   	//return ok(index.render("Your new application is ready."));
   }
-
+  public static JSONObject searchPosts(String searchText) throws UnknownHostException{
+	  mongoDBHandler mdbh = new mongoDBHandler() ; 
+	  JSONObject posts = mdbh.searchPosts(searchText) ;
+	return posts; 
+	  
+  }
   
 }
