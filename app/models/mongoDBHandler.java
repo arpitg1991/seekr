@@ -37,15 +37,15 @@ public class mongoDBHandler {
 		db = mongoClient.getDB( "seekr" );
 		colls = db.getCollectionNames();
 		for (String s : colls){
-			System.out.println(s);
+			//System.out.println(s);
 		}
 	}
 	public void addPost(JSONObject post) throws JSONException{
 		DBCollection coll = db.getCollection("posts");
 		ObjectId postId = new ObjectId () ;
 		//postId.getTimeSecond();
-		System.out.println("TIME");
-		System.out.println(postId.getTimeSecond());
+		//System.out.println("TIME");
+		//System.out.println(postId.getTimeSecond());
 		String userId = post.getJSONObject("post").getString("userId") ;
 		String text = post.getJSONObject("post").getString("text") ;
 		String catId = post.getJSONObject("post").getString("catId") ;
@@ -145,7 +145,7 @@ public class mongoDBHandler {
 			       //queryItem.get("");
 			       JSONObject postObj = new JSONObject(queryItem.toMap() );
 			       postItems.add(postObj);
-				   System.out.println(queryItem);
+				   //System.out.println(queryItem);
 			   }
 			} finally {
 			   cursor.close();
