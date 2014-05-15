@@ -1,5 +1,6 @@
 package controllers;
 
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.codehaus.jackson.JsonNode;
 
 import models.mongoDBHandler;
 
+import com.amazonaws.util.json.JSONException;
 import com.amazonaws.util.json.JSONObject;
 import com.google.gson.Gson;
 
@@ -18,52 +20,60 @@ public class Application extends Controller {
   
   public static void  index() {
   	System.out.println("hello");
-
+  	
     render() ; 
   }
   public static String createPost(String comment ) throws Exception
   {
   	System.out.println("in Create") ; 
-  	Map<String, String> post = new HashMap<String, String>();
-  	post.put("userId","123");
-  	post.put("catId","E");
-  	post.put("text",comment);
-  	post.put("lat", "40.808142");
-  	post.put("lon","-73.960543");
-  	post.put("exp","900");
+  	
+//	  	Map<String, String> post = new HashMap<String, String>();
+//	  	post.put("userId","123");
+//	  	post.put("catId","E");
+//	  	post.put("text",comment);
+//	  	post.put("lat", "40.808142");
+//	  	post.put("lon","-73.960543");
+//	  	post.put("exp","900");
   	mongoDBHandler mdbh = new mongoDBHandler();
-    String receivedJSON = request.params.get("body") ;
+    
+  	String receivedJSON = request.params.get("body") ;
   	JSONObject postItem = new JSONObject(receivedJSON);
   	//postItem.put("post", post);
       mdbh.addPost(postItem);
      return postItem.toString();
      // index();
   }
-  public static void createComment(String comment ) throws Exception
+  public static String createComment(String comment ) throws Exception
   {
-  	System.out.println("in Create") ; 
+  	System.out.println("in Create comments") ; 
   	Map<String, String> post = new HashMap<String, String>();
   	post.put("userId","123");
   	post.put("postId","1234");
   	post.put("text",comment);
-  	
-  	
   	mongoDBHandler mdbh = new mongoDBHandler();
-  	String receivedJSON = request.params.get("body") ;
-  	JSONObject postItem = new JSONObject(receivedJSON);
-  	
-  	
-  	//postItem.put("post", post);
-      mdbh.addPost(postItem);
-      index();
+  	//String receivedJSON = request.params.get("body") ;
+  	JSONObject postItem = new JSONObject();
+  	postItem.put("comment", post);
+    mdbh.addComment(postItem);
+    System.out.println(postItem) ;
+    return  "ok" ;
+    		//index();
   }
-  public static void getPost (String lat, String lon) throws Exception{
+  public static JSONObject getComments ( String postId) throws JSONException, UnknownHostException{
+	  System.out.println("in getComments") ; 
+	  mongoDBHandler mdbh = new mongoDBHandler();
+	  JSONObject comments = mdbh.getCommentForPost(postId);
+	  
+	  return comments ;
+	  
+  }
+  public static JSONObject getPost (String lat, String lon, String dist) throws Exception{
   	System.out.println("in getpost") ;
   	System.out.println(lat + " "  + lon) ; 
   	Map<String, String> query = new HashMap<String, String>();
-  	query.put("lat", "40.808160");
-  	query.put("lon","-73.960560");
-  	query.put("dist","500");
+  	query.put("lat", lat);//"40.808160"
+  	query.put("lon",lon);//"-73.960560"
+  	query.put("dist",dist);//500
   	mongoDBHandler mdbh = new mongoDBHandler();
   	//String receivedJSON = request.params.get("body") ;
   	//JSONObject jQuery = new JSONObject(receivedJSON);
@@ -73,7 +83,11 @@ public class Application extends Controller {
     
   	JSONObject post = mdbh.getPost(jQuery);
     System.out.println(post.toString());
-    renderJSON(post);
+   // System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n") ; 
+   // System.out.println(jQuery.toString() );
+    return post ;
+    //renderJSON(post);
+
     //index() ;
   	//return ok(index.render("Your new application is ready."));
   }

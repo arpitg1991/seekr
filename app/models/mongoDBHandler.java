@@ -80,10 +80,10 @@ public class mongoDBHandler {
 		coll.insert(postDoc);
 	}
 	public void addComment(JSONObject comment) throws JSONException{
+		
 		String userId = comment.getJSONObject("comment").getString("userId") ;
 		String text = comment.getJSONObject("comment").getString("text") ;
 		String postId = comment.getJSONObject("comment").getString("postId") ; 
-		List point = new ArrayList() ; 
 		DBCollection coll = db.getCollection("comments");
 		ObjectId commentId = new ObjectId () ;
 		java.util.Date commentDate= new java.util.Date();
@@ -97,21 +97,28 @@ public class mongoDBHandler {
                 
 		coll.insert(commentDoc);
 	}
+	public JSONObject getCommentForPost(String postId ) throws JSONException{
+		DBCollection coll = db.getCollection("comments");
+		JSONObject commentList = new JSONObject() ; 
+		List<JSONObject> commentItems = new ArrayList<JSONObject>() ; 
+		BasicDBObject query = new BasicDBObject("postId",postId) ;  
+		DBCursor cursor = coll.find();
+		
+		try {
+			   while(cursor.hasNext()) {
+			       DBObject queryItem = cursor.next() ;
+			       JSONObject commentObj = new JSONObject(queryItem.toMap() );
+			       commentItems.add(commentObj);
+				   System.out.println(queryItem);
+			   }
+			} finally {
+			   cursor.close();
+			}
+		commentList.put("comment",commentItems);
+		return commentList ; 
+
+	}
 	public JSONObject getPost (JSONObject jQuery) throws JSONException{
-		/*{
-		    //"location": {
-		    //    "$near": {
-		            "$geometry": {
-		                "type": "Point",
-		                "coordinates": [
-		                    40,
-		                    5
-		                ]
-		            },
-		            "$maxDistance": 500
-		        }
-		    }
-		}*/
 		DBCollection coll = db.getCollection("posts");
 		JSONObject postList = new JSONObject() ; 
 		List<JSONObject> postItems = new ArrayList<JSONObject>() ; 
