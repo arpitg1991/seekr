@@ -82,7 +82,7 @@ public class Application extends Controller {
   	jQuery.put("query", query);
     
   	JSONObject post = mdbh.getPost(jQuery);
-    System.out.println(post.toString());
+    //System.out.println(post.toString());
    // System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n") ; 
    // System.out.println(jQuery.toString() );
     //renderJSON(post);

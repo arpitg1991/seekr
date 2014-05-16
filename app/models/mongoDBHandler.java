@@ -43,9 +43,7 @@ public class mongoDBHandler {
 		mongoClient.setWriteConcern(WriteConcern.JOURNALED);
 		db = mongoClient.getDB(  DBNAME );
 		colls = db.getCollectionNames();
-		for (String s : colls){
-			//System.out.println(s);
-		}
+		
 	}
 	public void addPost(JSONObject post) throws JSONException{
 		DBCollection coll = db.getCollection("posts");
@@ -65,7 +63,8 @@ public class mongoDBHandler {
 		double lonD = Double.parseDouble(lat);
 		double latD = Double.parseDouble(lon);
 		List point = new ArrayList() ; 
-		point.add(new double[] {latD,lonD});
+		point.add(lonD);
+		point.add(latD) ; 
 		
 		java.util.Date postDate= new java.util.Date();
 		Timestamp postTime = new Timestamp(postDate.getTime());
@@ -110,11 +109,28 @@ public class mongoDBHandler {
 	}
 	
 	public void updateUniquePpl(String postId) throws JSONException{
+		DBCollection coll1 = db.getCollection("posts") ; 
 		DBCollection coll = db.getCollection("comments");
+		int maxPpl = -1 ; 
 		JSONObject commentList = new JSONObject() ; 
 		List<JSONObject> commentItems = new ArrayList<JSONObject>() ; 
+		
 		BasicDBObject query = new BasicDBObject("postId",postId) ;  
-		DBCursor cursor = coll.find();
+		
+		DBCursor cursor1 = coll1.find(query) ;
+		try {
+			   while(cursor1.hasNext()) {
+			       DBObject queryItem = cursor1.next() ;
+			       JSONObject postObj = new JSONObject(queryItem.toMap() );
+			        maxPpl = postObj.getInt("maxPpl") ;
+				   
+			   }
+			} finally {
+			   cursor1.close();
+			}
+		
+		
+		DBCursor cursor = coll.find(query);
 		
 		try {
 			   while(cursor.hasNext()) {
@@ -127,8 +143,6 @@ public class mongoDBHandler {
 			   cursor.close();
 			}
 		commentList.put("comment",commentItems);
-		
-		
 		
 	}
 	public JSONObject getCommentForPost(String postId ) throws JSONException{
@@ -164,14 +178,15 @@ public class mongoDBHandler {
 		double lonD = Double.parseDouble(lat);
 		double latD = Double.parseDouble(lon);
 		List point = new ArrayList() ; 
-		point.add(new double[] {latD,lonD});
-		
+		point.add(lonD);
+		point.add(latD) ; 
 		BasicDBObject query = new BasicDBObject("location", 
 				new BasicDBObject("$near", 
 						new BasicDBObject("$geometry",
 								new BasicDBObject("type","Point").
-								append("coordinates",point))).
-								append("$maxDistance",maxDis)); 
+								append("coordinates",point)).
+								append("$maxDistance",maxDis))); 
+		System.out.println(query.toString()) ;
 		DBCursor cursor = coll.find(query);
 		
 		try {
@@ -179,6 +194,7 @@ public class mongoDBHandler {
 			       DBObject queryItem = cursor.next() ;
 			       //queryItem.get("");
 			       JSONObject postObj = new JSONObject(queryItem.toMap() );
+			       
 			       postItems.add(postObj);
 				   //System.out.println(queryItem);
 			   }
