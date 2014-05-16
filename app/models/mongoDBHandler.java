@@ -96,15 +96,20 @@ public class mongoDBHandler {
 		java.util.Date commentDate= new java.util.Date();
 		
 		
-		BasicDBObject commentDoc = new BasicDBObject("commentId", commentId.toString()).
+		BasicDBObject commentDoc = new BasicDBObject("_id", commentId.toString()).
 				append("postId",postId).
                 append("userId", userId).
                 append("text", text).
                 append("commentTime",commentDate) ;
                 
 		coll.insert(commentDoc);
+		
+		updateUniquePpl(postId) ;
+		
+		
 	}
-	public JSONObject getCommentForPost(String postId ) throws JSONException{
+	
+	public void updateUniquePpl(String postId) throws JSONException{
 		DBCollection coll = db.getCollection("comments");
 		JSONObject commentList = new JSONObject() ; 
 		List<JSONObject> commentItems = new ArrayList<JSONObject>() ; 
@@ -122,9 +127,32 @@ public class mongoDBHandler {
 			   cursor.close();
 			}
 		commentList.put("comment",commentItems);
-		return commentList ; 
-
+		
+		
+		
 	}
+	public JSONObject getCommentForPost(String postId ) throws JSONException{
+		DBCollection coll = db.getCollection("comments");
+		JSONObject commentList = new JSONObject() ; 
+		List<JSONObject> commentItems = new ArrayList<JSONObject>() ; 
+		BasicDBObject query = new BasicDBObject("postId",postId) ;  
+		DBCursor cursor = coll.find(query);
+		
+		try {
+			   while(cursor.hasNext()) {
+			       DBObject queryItem = cursor.next() ;
+			       JSONObject commentObj = new JSONObject(queryItem.toMap() );
+			       commentItems.add(commentObj);
+				   System.out.println(queryItem);
+			   }
+			} finally {
+			   cursor.close();
+			}
+		commentList.put("comment",commentItems);
+		return commentList ; 
+		
+	}
+	
 	public JSONObject getPost (JSONObject jQuery) throws JSONException{
 		DBCollection coll = db.getCollection("posts");
 		JSONObject postList = new JSONObject() ; 
@@ -144,7 +172,7 @@ public class mongoDBHandler {
 								new BasicDBObject("type","Point").
 								append("coordinates",point))).
 								append("$maxDistance",maxDis)); 
-		DBCursor cursor = coll.find();
+		DBCursor cursor = coll.find(query);
 		
 		try {
 			   while(cursor.hasNext()) {
