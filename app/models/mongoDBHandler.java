@@ -60,8 +60,8 @@ public class mongoDBHandler {
 		String expireT  = post.getJSONObject("post").getString("exp") ;
 		long expireDur = Long.parseLong(expireT);
 		
-		double lonD = Double.parseDouble(lat);
-		double latD = Double.parseDouble(lon);
+		double lonD = Double.parseDouble(lon);
+		double latD = Double.parseDouble(lat);
 		List point = new ArrayList() ; 
 		point.add(lonD);
 		point.add(latD) ; 
