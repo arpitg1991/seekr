@@ -175,8 +175,8 @@ public class mongoDBHandler {
 		String lon = jQuery.getJSONObject("query").getString("lon") ;
 		String dist = jQuery.getJSONObject("query").getString("dist") ;
 		int maxDis = Integer.parseInt(dist);
-		double lonD = Double.parseDouble(lat);
-		double latD = Double.parseDouble(lon);
+		double lonD = Double.parseDouble(lon);
+		double latD = Double.parseDouble(lat);
 		List point = new ArrayList() ; 
 		point.add(lonD);
 		point.add(latD) ; 
