@@ -69,12 +69,11 @@ public class mongoDBHandler {
 		java.util.Date postDate= new java.util.Date();
 		Timestamp postTime = new Timestamp(postDate.getTime());
 		long expireSec = postTime.getTime();
-		expireSec += expireDur ; 
-		java.util.Date expireDate= new java.util.Date();
+		expireSec += expireDur*1000 ; 
+		java.util.Date expireDate = new java.util.Date();
 		expireDate.setTime(expireSec);
-		
 		int likes = 0 ; 
-		
+		System.out.println(expireDate);
 		BasicDBObject postDoc = new BasicDBObject("_id", postId.toString()).
                 append("userId", userId).
                 append("text", text).
@@ -85,6 +84,7 @@ public class mongoDBHandler {
 				append("catId",catId) ;
 		coll.insert(postDoc);
 	}
+	
 	public void addComment(JSONObject comment) throws JSONException{
 		
 		String userId = comment.getJSONObject("comment").getString("userId") ;
@@ -157,7 +157,7 @@ public class mongoDBHandler {
 			       DBObject queryItem = cursor.next() ;
 			       JSONObject commentObj = new JSONObject(queryItem.toMap() );
 			       commentItems.add(commentObj);
-				   System.out.println(queryItem);
+				  // System.out.println(queryItem);
 			   }
 			} finally {
 			   cursor.close();
@@ -177,6 +177,8 @@ public class mongoDBHandler {
 		int maxDis = Integer.parseInt(dist);
 		double lonD = Double.parseDouble(lon);
 		double latD = Double.parseDouble(lat);
+		java.util.Date getPostDate= new java.util.Date();
+		
 		List point = new ArrayList() ; 
 		point.add(lonD);
 		point.add(latD) ; 
@@ -185,7 +187,8 @@ public class mongoDBHandler {
 						new BasicDBObject("$geometry",
 								new BasicDBObject("type","Point").
 								append("coordinates",point)).
-								append("$maxDistance",maxDis))); 
+								append("$maxDistance",maxDis))).append("expireTime",
+										new BasicDBObject("$gte",getPostDate)); 
 		System.out.println(query.toString()) ;
 		DBCursor cursor = coll.find(query);
 		

@@ -45,16 +45,16 @@ public class Application extends Controller {
   }
   public static String createComment(String comment ) throws Exception
   {
-  	System.out.println("in Create comments") ; 
-  	Map<String, String> post = new HashMap<String, String>();
-  	post.put("userId","123");
-  	post.put("postId","5376a588e4b04b2a63e67405");
-  	post.put("text",comment);
+//  	System.out.println("in Create comments") ; 
+//  	Map<String, String> post = new HashMap<String, String>();
+//  	post.put("userId","123") ;
+//  	post.put("postId","5376a588e4b04b2a63e67405") ;
+//  	post.put("text",comment) ;
   	mongoDBHandler mdbh = new mongoDBHandler();
-  	//String receivedJSON = request.params.get("body") ;
-  	JSONObject postItem = new JSONObject();
-  	postItem.put("comment", post);
-    mdbh.addComment(postItem);
+  	String receivedJSON = request.params.get("body") ;
+  	JSONObject postItem = new JSONObject(receivedJSON);
+//  	postItem.put("comment", post) ;
+    mdbh.addComment(postItem) ;
     System.out.println(postItem) ;
     return  "ok" ;
     		//index();
