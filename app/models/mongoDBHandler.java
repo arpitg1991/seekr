@@ -178,7 +178,7 @@ public class mongoDBHandler {
 		double lonD = Double.parseDouble(lon);
 		double latD = Double.parseDouble(lat);
 		java.util.Date getPostDate= new java.util.Date();
-		
+		System.out.println("lat " + lat + " lon " + lon);
 		List point = new ArrayList() ; 
 		point.add(lonD);
 		point.add(latD) ; 
@@ -189,7 +189,7 @@ public class mongoDBHandler {
 								append("coordinates",point)).
 								append("$maxDistance",maxDis))).append("expireTime",
 										new BasicDBObject("$gte",getPostDate)); 
-		System.out.println(query.toString()) ;
+		//System.out.println(query.toString()) ;
 		DBCursor cursor = coll.find(query);
 		
 		try {
