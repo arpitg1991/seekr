@@ -207,7 +207,7 @@ public class mongoDBHandler {
 		postList.put("post",postItems);
 		return postList ; 
 	}
-	public JSONObject searchPosts(String searchText ){
+	public List<JSONObject> searchPosts(String searchText ){
 		final DBObject textSearchCommand = new BasicDBObject();
 		String collectionName = "posts" ;
 	    textSearchCommand.put("text", collectionName);
@@ -236,7 +236,8 @@ public class mongoDBHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return postList;
+	    return postItems ; 
+		//return postList;
 	}
 
 }

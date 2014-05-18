@@ -1,8 +1,11 @@
 package controllers;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import jobs.LoadDBClass;
 
 import org.codehaus.jackson.JsonNode;
 
@@ -83,19 +86,28 @@ public class Application extends Controller {
     
   	JSONObject post = mdbh.getPost(jQuery);
     //System.out.println(post.toString());
-   // System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n") ; 
-   // System.out.println(jQuery.toString() );
+    // System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n") ; 
+    // System.out.println(jQuery.toString() );
     //renderJSON(post);
     return post ;
     
     //index() ;
   	//return ok(index.render("Your new application is ready."));
   }
-  public static JSONObject searchPosts(String searchText) throws UnknownHostException{
+  public static JSONObject searchPosts(String searchText) throws UnknownHostException, JSONException{
 	  mongoDBHandler mdbh = new mongoDBHandler() ; 
-	  JSONObject posts = mdbh.searchPosts(searchText) ;
-	return posts; 
+	  java.util.List<JSONObject> posts = new ArrayList<JSONObject>();
+	  posts = mdbh.searchPosts(searchText) ;
+	  java.util.List<String> relWords = new ArrayList<String>() ;
+	  relWords = getSimilarWords(searchText) ; 
+	  JSONObject relatedSearchPlusPosts = new JSONObject();
+	  relatedSearchPlusPosts.put("simWords",relWords) ; 
+	  relatedSearchPlusPosts.put("post", posts) ;
+	  return relatedSearchPlusPosts; 
 	  
   }
-  
+  public static java.util.List<String> getSimilarWords(String word){
+	  LoadDBClass jobim = new LoadDBClass() ;
+	  return jobim.getSimWords(word);
+  }
 }
